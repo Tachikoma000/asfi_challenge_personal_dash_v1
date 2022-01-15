@@ -1,0 +1,20 @@
+Create a personal dash that calculates and displays the following:
+1. 1. Your Index Adjusted Risk Free Value, with a forecast at current APY on Time to Risk Free.
+
+2. $ of value of your claim on treasury and how it has changed
+
+3. Dilution of your % share in market cap since purchase
+
+4. Daily $ value of rebases gained
+
+5. Value over time in ETH
+
+6. 3 $gOHM yield earning options: a) $TOKE, b) $DPX and c) LPing (Proteus)
+
+7. Valuation multiples today compared to purchase date
+
+8. APY at different staking %ages
+
+9. Your tax liability if you sold today under two methods 1) OHM rewards are income 2) OHM rewards are stock splits
+
+10. Your voting done on past OIPs and which ones you didn’t vote on
