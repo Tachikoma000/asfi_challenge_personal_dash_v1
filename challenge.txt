@@ -18,3 +18,5 @@ Create a personal dash that calculates and displays the following:
 9. Your tax liability if you sold today under two methods 1) OHM rewards are income 2) OHM rewards are stock splits
 
 10. Your voting done on past OIPs and which ones you didn’t vote on
+
+11. Easy login with eth wallet
