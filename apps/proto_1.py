@@ -16,8 +16,11 @@ import numpy as np
 import math
 from millify import millify
 
+# This is a single page app
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SLATE])
 
+# Nav bar creation. Something simple for now
 navbar = dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink('Main', href='#')),
@@ -27,6 +30,8 @@ navbar = dbc.NavbarSimple(
     color='#2e343e',
     dark=True,
 ),
+
+# create the app layout. Nothing too fancy, we just need a way to display the data from the users wallet
 
 app.layout = dbc.Container([
     dbc.Row(navbar),
@@ -193,7 +198,10 @@ def personal_metrics_main(ohmie_address):
     ohmieInfo_df['sohmbalance'] = ohmieInfo_df.sohmindexed * ohmieInfo_df.currentindex
     ohmieInfo_df = ohmieInfo_df[['timestamp', 'datetime', 'currentindex', 'sohmindexed', 'sohmbalance']]
 
-    ohmieInfo_df = pd.merge_asof(ohmieInfo_df, treasury_df[['ohmcirculatingsupply', 'marketcap', 'treasuryriskfreevalue', 'treasurymarketvalue']].sort_values('timestamp'), on='timestamp')
+    ohmieInfo_df = pd.merge_asof(ohmieInfo_df, treasury_df[['ohmcirculatingsupply', 'marketcap',
+                                                            'treasuryriskfreevalue',
+                                                            'treasurymarketvalue']].sort_values('timestamp'),
+                                 on='timestamp')
 
     ohmieInfo_df['pctmcap'] = ohmieInfo_df.sohmbalance / ohmieInfo_df.ohmcirculatingsupply
     ohmieInfo_df['pctrfv'] = ohmieInfo_df.pctmcap * ohmieInfo_df.treasuryriskfreevalue
