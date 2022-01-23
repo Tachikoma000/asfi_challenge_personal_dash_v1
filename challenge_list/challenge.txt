@@ -1,5 +1,5 @@
 Create a personal dash that calculates and displays the following:
-1. 1. Your Index Adjusted Risk Free Value, with a forecast at current APY on Time to Risk Free.
+1. Your Index Adjusted Risk Free Value, with a forecast at current APY on Time to Risk Free
 
 2. $ of value of your claim on treasury and how it has changed
 
