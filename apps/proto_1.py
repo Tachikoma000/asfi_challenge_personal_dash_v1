@@ -106,6 +106,7 @@ app.layout = dbc.Container([
             ], color='#273342', inverse=True)
         ], xs=12, sm=12, md=12, lg=4, xl=4),
     ], style={'padding': '10px'})
+    
 ], style={'backgroundColor': '#2a3847'}, fluid=True)
 
 

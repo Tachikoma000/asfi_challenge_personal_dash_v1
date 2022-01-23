@@ -9,3 +9,4 @@ requests
 retrying
 pycoingecko
 dash-extensions
+subgrounds
