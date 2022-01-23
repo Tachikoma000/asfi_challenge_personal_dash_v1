@@ -320,8 +320,90 @@ app.layout = dbc.Container([
                 }
             ))
             ], style={'width': '48%', 'display': 'inline-block'}),
-        ])
-        ])
+        ]),
+        html.Div([
+            Graph(Figure(
+            subgrounds=sg,
+            traces=[
+                Scatter(
+                    name='Risk-Free Value per OHM',
+                    x=protocol_metrics_1year.datetime,
+                    y=protocol_metrics_1year.rfv_per_ohm,
+                    # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
+                ),
+                Scatter(
+                    name='OHM Price',
+                    x=protocol_metrics_1year.datetime,
+                    y=protocol_metrics_1year.ohmPrice,
+                    # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
+                ),
+            ],
+            layout={
+                'showlegend': True,
+                'yaxis': {'type': 'linear'},
+                'title': {'text': 'RFV per OHM vs OHM Price'}
+            }
+            ))
+        ]),
+        html.Div([
+            Graph(Figure(
+            subgrounds=sg,
+            traces=[
+                Scatter(
+                    name='OHM Price / Risk-Free Value per OHM (%)',
+                    x=protocol_metrics_1year.datetime,
+                    y=protocol_metrics_1year.price_rfv_ratio,
+                ),
+            ],
+            layout={
+                'showlegend': True,
+                'yaxis': {'type': 'linear'},
+                'title': {'text': 'OHM Price / Risk-Free Value per OHM (%)'}
+            }
+            ))
+        ]),
+        html.Div([
+            Graph(Figure(
+            subgrounds=sg,
+            traces=[
+                Scatter(
+                    name='Treasury Market Value per OHM',
+                    x=protocol_metrics_1year.datetime,
+                    y=protocol_metrics_1year.tmv_per_ohm,
+                    # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
+                ),
+                Scatter(
+                    name='OHM Price',
+                    x=protocol_metrics_1year.datetime,
+                    y=protocol_metrics_1year.ohmPrice,
+                    # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
+                ),
+            ],
+            layout={
+                'showlegend': True,
+                'yaxis': {'type': 'linear'},
+                'title': {'text': 'Treasury Market Value per OHM vs OHM Price'}
+            }
+            ))
+        ]),
+        html.Div([
+            Graph(Figure(
+            subgrounds=sg,
+            traces=[
+                Scatter(
+                    name='OHM Price / Treasury Market Value per OHM (%)',
+                    x=protocol_metrics_1year.datetime,
+                    y=protocol_metrics_1year.price_tmv_ratio,
+                ),
+            ],
+            layout={
+                'showlegend': True,
+                'yaxis': {'type': 'linear'},
+                'title': {'text': 'OHM Price / Treasury Market Value per OHM (%)'}
+            }
+            ))
+        ]),
+    ]),
 ], style={'backgroundColor': '#2a3847'}, fluid=True)
 
 
