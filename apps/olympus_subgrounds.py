@@ -11,7 +11,7 @@ from subgrounds.subgrounds import Subgrounds
 
 
 sg = Subgrounds()
-olympusDAO = sg.load_subgraph('https://api.thegraph.com/subgraphs/name/drondin/olympus-graph')
+olympusDAO = sg.load_subgraph('https://api.thegraph.com/subgraphs/name/drondin/olympus-protocol-metrics')
 
 # Define useful synthetic fields
 olympusDAO.ProtocolMetric.datetime = SyntheticField(
@@ -22,7 +22,7 @@ olympusDAO.ProtocolMetric.datetime = SyntheticField(
 
 # olympusDAO.ProtocolMetric.circ_supply_percent = 100 * olympusDAO.ProtocolMetric.ohmCirculatingSupply / olympusDAO.ProtocolMetric.totalSupply
 
-olympusDAO.ProtocolMetric.staked_supply_percent = 100 * olympusDAO.ProtocolMetric.sOhmCirculatingSupply / olympusDAO.ProtocolMetric.totalSupply
+olympusDAO.ProtocolMetric.staked_supply_percent = 100 * olympusDAO.ProtocolMetric.sOhmCirculatingSupply / (1 + olympusDAO.ProtocolMetric.totalSupply)
 olympusDAO.ProtocolMetric.unstaked_supply_percent = 100 - olympusDAO.ProtocolMetric.staked_supply_percent
 
 protocol_metrics_1year = olympusDAO.Query.protocolMetrics(
