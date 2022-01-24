@@ -11,7 +11,7 @@ from subgrounds.subgrounds import Subgrounds
 
 
 sg = Subgrounds()
-olympusDAO = sg.load_subgraph('https://api.thegraph.com/subgraphs/name/drondin/olympus-graph')
+olympusDAO = sg.load_subgraph('https://api.thegraph.com/subgraphs/name/drondin/olympus-protocol-metrics')
 
 # Define useful synthetic fields
 olympusDAO.ProtocolMetric.datetime = SyntheticField(
@@ -20,13 +20,13 @@ olympusDAO.ProtocolMetric.datetime = SyntheticField(
   olympusDAO.ProtocolMetric.timestamp,
 )
 
-olympusDAO.ProtocolMetric.staked_supply_percent = 100 * olympusDAO.ProtocolMetric.sOhmCirculatingSupply / olympusDAO.ProtocolMetric.totalSupply
+olympusDAO.ProtocolMetric.staked_supply_percent = 100 * olympusDAO.ProtocolMetric.sOhmCirculatingSupply / (1 + olympusDAO.ProtocolMetric.totalSupply)
 olympusDAO.ProtocolMetric.unstaked_supply_percent = 100 - olympusDAO.ProtocolMetric.staked_supply_percent
 
-olympusDAO.ProtocolMetric.rfv_per_ohm = olympusDAO.ProtocolMetric.treasuryRiskFreeValue / olympusDAO.ProtocolMetric.totalSupply
+olympusDAO.ProtocolMetric.rfv_per_ohm = olympusDAO.ProtocolMetric.treasuryRiskFreeValue / (olympusDAO.ProtocolMetric.totalSupply + 1)
 olympusDAO.ProtocolMetric.price_rfv_ratio = 100 * olympusDAO.ProtocolMetric.ohmPrice / (olympusDAO.ProtocolMetric.rfv_per_ohm + 1)
 
-olympusDAO.ProtocolMetric.tmv_per_ohm = olympusDAO.ProtocolMetric.treasuryMarketValue / olympusDAO.ProtocolMetric.totalSupply
+olympusDAO.ProtocolMetric.tmv_per_ohm = olympusDAO.ProtocolMetric.treasuryMarketValue / (olympusDAO.ProtocolMetric.totalSupply + 1)
 olympusDAO.ProtocolMetric.price_tmv_ratio = 100 * olympusDAO.ProtocolMetric.ohmPrice / (olympusDAO.ProtocolMetric.tmv_per_ohm + 1)
 
 protocol_metrics_1year = olympusDAO.Query.protocolMetrics(
