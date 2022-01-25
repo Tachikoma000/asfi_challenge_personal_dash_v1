@@ -87,7 +87,7 @@ app.layout = dbc.Container([
                                 type='text',
                                 value='0x0149f30573c638eef7e2786c04b666d1da0fb497',
                                 size='sm',
-                                style={'text-align': 'center'}
+                                style={'text-align': 'center', 'color': 'white'}
                             ), xs=12, sm=12, md=12, lg=10, xl=10
                         )
                     ])
@@ -131,39 +131,51 @@ app.layout = dbc.Container([
                              'font-weight': '600',
                              'font-size': '64px',
                              'line-height': '96px',
-                             'color': '#FFFFFF'
+                             'color': '#FFFFFF',
                              }, xs=12, sm=12, md=12, lg=6, xl=6)
         ]),
-    ]),
+    ], style={'padding': '10px'}),
     dbc.Row([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    Graph(Figure(
-                        subgrounds=sg,
-                        traces=[
-                            Indicator(value=last_metric.marketCap, title='Market Cap', domain={'row': 0, 'column': 0},
-                                      number={'valueformat': '$,.0f'})]
-                    )),
+                    html.H1('Market Cap', className='display-3', style={'text-align': 'center'}),
+                    html.Hr(className='my-2'),
+                    html.H1('$' +
+                            millify(
+                                sg.execute(
+                                    sg.mk_request([
+                                        last_metric.marketCap
+                                    ])
+                                )[0]['protocolMetrics'][0]['marketCap'],
+                                precision=2),
+                            style={'text-align': 'center'}
+                            ),
                 ]),
-            ]),
+            ], style={'height': '100%'}, color='#273342', inverse=True),
         ], xs=12, sm=12, md=12, lg=3, xl=3),
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    Graph(Figure(
-                        subgrounds=sg,
-                        traces=[
-                            Indicator(value=last_metric.ohmPrice, title='Price', domain={'row': 0, 'column': 1},
-                                      number={'valueformat': '$,.2f'})]
-                    )),
+                    html.H1('OHM Price', className='display-3', style={'text-align': 'center'}),
+                    html.Hr(className='my-2'),
+                    html.H1('$' +
+                            millify(
+                                sg.execute(
+                                    sg.mk_request([
+                                        last_metric.ohmPrice
+                                    ])
+                                )[0]['protocolMetrics'][0]['ohmPrice'],
+                                precision=2),
+                            style={'text-align': 'center'}
+                            ),
                 ]),
-            ]),
+            ], style={'height': '100%'}, color='#273342', inverse=True),
         ], xs=12, sm=12, md=12, lg=3, xl=3),
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H1('Current APY', className='display-3', style={'text-align': 'center'}),
+                    html.H1('Current APY (%)', className='display-3', style={'text-align': 'center'}),
                     html.Hr(className='my-2'),
                     html.H1(
                         millify(
@@ -176,27 +188,27 @@ app.layout = dbc.Container([
                         style={'text-align': 'center'}
                     ),
                 ]),
-            ]),
+            ], style={'height': '100%'}, color='#273342', inverse=True),
         ], xs=12, sm=12, md=12, lg=3, xl=3),
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H1('Current APY', className='display-3', style={'text-align': 'center'}),
+                    html.H1('Total Value Deposited', className='display-3', style={'text-align': 'center'}),
                     html.Hr(className='my-2'),
                     html.H1(
                         millify(
                             sg.execute(
                                 sg.mk_request([
-                                    last_metric.currentAPY
+                                    last_metric.totalValueLocked
                                 ])
-                            )[0]['protocolMetrics'][0]['currentAPY'],
+                            )[0]['protocolMetrics'][0]['totalValueLocked'],
                             precision=2),
                         style={'text-align': 'center'}
                     ),
                 ]),
-            ]),
+            ], style={'height': '100%'}, color='#273342', inverse=True),
         ], xs=12, sm=12, md=12, lg=3, xl=3),
-    ]),
+    ], style={'padding': '10px'}),
     dbc.Row([
         dbc.Col([dbc.Card([
             dbc.CardHeader([
@@ -403,9 +415,9 @@ app.layout = dbc.Container([
                         ]),
                     ]),
                 ], style={'color': '#FFFFFF',
-                      'font-weight': '500',
-                      'font-size': '24px',
-                      'font-style': 'normal'}),
+                          'font-weight': '500',
+                          'font-size': '24px',
+                          'font-style': 'normal'}),
                 dbc.CardBody([
                     Graph(Figure(
                         subgrounds=sg,
@@ -447,91 +459,165 @@ app.layout = dbc.Container([
             ], style={'height': '100%'}, color='#273342', inverse=True),
         ], xs=12, sm=12, md=12, lg=6, xl=6)
     ], style={'padding': '10px'}),
-    html.Div([
-        html.Div([
-            Graph(Figure(
-            subgrounds=sg,
-            traces=[
-                Scatter(
-                    name='Risk-Free Value per OHM',
-                    x=protocol_metrics_1year.datetime,
-                    y=protocol_metrics_1year.rfv_per_ohm,
-                    # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
-                ),
-                Scatter(
-                    name='OHM Price',
-                    x=protocol_metrics_1year.datetime,
-                    y=protocol_metrics_1year.ohmPrice,
-                    # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
-                ),
-            ],
-            layout={
-                'showlegend': True,
-                'yaxis': {'type': 'linear'},
-                'title': {'text': 'RFV per OHM vs OHM Price'}
-            }
-            ))
-        ]),
-        html.Div([
-            Graph(Figure(
-            subgrounds=sg,
-            traces=[
-                Scatter(
-                    name='OHM Price / Risk-Free Value per OHM (%)',
-                    x=protocol_metrics_1year.datetime,
-                    y=protocol_metrics_1year.price_rfv_ratio,
-                ),
-            ],
-            layout={
-                'showlegend': True,
-                'yaxis': {'type': 'linear'},
-                'title': {'text': 'OHM Price / Risk-Free Value per OHM (%)'}
-            }
-            ))
-        ]),
-        html.Div([
-            Graph(Figure(
-            subgrounds=sg,
-            traces=[
-                Scatter(
-                    name='Treasury Market Value per OHM',
-                    x=protocol_metrics_1year.datetime,
-                    y=protocol_metrics_1year.tmv_per_ohm,
-                    # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
-                ),
-                Scatter(
-                    name='OHM Price',
-                    x=protocol_metrics_1year.datetime,
-                    y=protocol_metrics_1year.ohmPrice,
-                    # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
-                ),
-            ],
-            layout={
-                'showlegend': True,
-                'yaxis': {'type': 'linear'},
-                'title': {'text': 'Treasury Market Value per OHM vs OHM Price'}
-            }
-            ))
-        ]),
-        html.Div([
-            Graph(Figure(
-            subgrounds=sg,
-            traces=[
-                Scatter(
-                    name='OHM Price / Treasury Market Value per OHM (%)',
-                    x=protocol_metrics_1year.datetime,
-                    y=protocol_metrics_1year.price_tmv_ratio,
-                ),
-            ],
-            layout={
-                'showlegend': True,
-                'yaxis': {'type': 'linear'},
-                'title': {'text': 'OHM Price / Treasury Market Value per OHM (%)'}
-            }
-            ))
-        ]),
-    ]),
-    html.Footer('Powered by Subgrounds',
+    dbc.Row([
+        dbc.Col([
+            dbc.Card([
+                dbc.CardHeader([
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Label('RFV/OHM vs OHM Price'),
+                        ]),
+                    ]),
+                ], style={'color': '#FFFFFF',
+                          'font-weight': '500',
+                          'font-size': '24px',
+                          'font-style': 'normal'}),
+                dbc.CardBody([
+                    Graph(Figure(
+                        subgrounds=sg,
+                        traces=[
+                            Scatter(
+                                name='Risk-Free Value per OHM',
+                                x=protocol_metrics_1year.datetime,
+                                y=protocol_metrics_1year.rfv_per_ohm,
+                                # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
+                            ),
+                            Scatter(
+                                name='OHM Price',
+                                x=protocol_metrics_1year.datetime,
+                                y=protocol_metrics_1year.ohmPrice,
+                                # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
+                            ),
+                        ],
+                        layout={
+                            'showlegend': True,
+                            'yaxis': {'type': 'linear', 'linewidth': 0.1, 'linecolor': '#31333F', 'color': 'white'},
+                            'xaxis': {'linewidth': 0.1, 'linecolor': '#31333F', 'color': 'white', 'showgrid': False},
+                            'legend.font.color': 'white',
+                            'paper_bgcolor': 'rgba(0,0,0,0)',
+                            'plot_bgcolor': 'rgba(0,0,0,0)',
+                        }
+                    ))
+                ]),
+                dbc.CardFooter('Learn more')
+            ], style={'height': '100%'}, color='#273342', inverse=True),
+        ], xs=12, sm=12, md=12, lg=6, xl=6),
+        dbc.Col([
+            dbc.Card([
+                dbc.CardHeader([
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Label('OHM Price / RFV per OHM (%)'),
+                        ]),
+                    ]),
+                ], style={'color': '#FFFFFF',
+                          'font-weight': '500',
+                          'font-size': '24px',
+                          'font-style': 'normal'}),
+                dbc.CardBody([
+                    Graph(Figure(
+                        subgrounds=sg,
+                        traces=[
+                            Scatter(
+                                name='OHM Price / Risk-Free Value per OHM (%)',
+                                x=protocol_metrics_1year.datetime,
+                                y=protocol_metrics_1year.price_rfv_ratio,
+                            ),
+                        ],
+                        layout={
+                            'showlegend': True,
+                            'yaxis': {'type': 'linear', 'linewidth': 0.1, 'linecolor': '#31333F', 'color': 'white'},
+                            'xaxis': {'linewidth': 0.1, 'linecolor': '#31333F', 'color': 'white', 'showgrid': False},
+                            'legend.font.color': 'white',
+                            'paper_bgcolor': 'rgba(0,0,0,0)',
+                            'plot_bgcolor': 'rgba(0,0,0,0)',
+                        }
+                    ))
+                ]),
+                dbc.CardFooter('Learn more')
+            ], style={'height': '100%'}, color='#273342', inverse=True),
+        ], xs=12, sm=12, md=12, lg=6, xl=6),
+    ], style={'padding': '10px'}),
+    dbc.Row([
+        dbc.Col([
+            dbc.Card([
+                dbc.CardHeader([
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Label('Treasury Market Value per OHM vs OHM Price'),
+                        ]),
+                    ]),
+                ], style={'color': '#FFFFFF',
+                          'font-weight': '500',
+                          'font-size': '24px',
+                          'font-style': 'normal'}),
+                dbc.CardBody([
+                    Graph(Figure(
+                        subgrounds=sg,
+                        traces=[
+                            Scatter(
+                                name='Treasury Market Value per OHM',
+                                x=protocol_metrics_1year.datetime,
+                                y=protocol_metrics_1year.tmv_per_ohm,
+                                # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
+                            ),
+                            Scatter(
+                                name='OHM Price',
+                                x=protocol_metrics_1year.datetime,
+                                y=protocol_metrics_1year.ohmPrice,
+                                # line={'width': 0.5, 'color': 'rgb(255, 128, 64)'},
+                            ),
+                        ],
+                        layout={
+                            'showlegend': True,
+                            'yaxis': {'type': 'linear', 'linewidth': 0.1, 'linecolor': '#31333F', 'color': 'white'},
+                            'xaxis': {'linewidth': 0.1, 'linecolor': '#31333F', 'color': 'white', 'showgrid': False},
+                            'legend.font.color': 'white',
+                            'paper_bgcolor': 'rgba(0,0,0,0)',
+                            'plot_bgcolor': 'rgba(0,0,0,0)',
+                        }
+                    ))
+                ]),
+                dbc.CardFooter('Learn more')
+            ], style={'height': '100%'}, color='#273342', inverse=True),
+        ], xs=12, sm=12, md=12, lg=6, xl=6),
+        dbc.Col([
+            dbc.Card([
+                dbc.CardHeader([
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Label('OHM Price / Treasury Market Value per OHM (%)'),
+                        ]),
+                    ]),
+                ], style={'color': '#FFFFFF',
+                          'font-weight': '500',
+                          'font-size': '24px',
+                          'font-style': 'normal'}),
+                dbc.CardBody([
+                    Graph(Figure(
+                        subgrounds=sg,
+                        traces=[
+                            Scatter(
+                                name='OHM Price / Treasury Market Value per OHM (%)',
+                                x=protocol_metrics_1year.datetime,
+                                y=protocol_metrics_1year.price_tmv_ratio,
+                            ),
+                        ],
+                        layout={
+                            'showlegend': True,
+                            'yaxis': {'type': 'linear', 'linewidth': 0.1, 'linecolor': '#31333F', 'color': 'white'},
+                            'xaxis': {'linewidth': 0.1, 'linecolor': '#31333F', 'color': 'white', 'showgrid': False},
+                            'legend.font.color': 'white',
+                            'paper_bgcolor': 'rgba(0,0,0,0)',
+                            'plot_bgcolor': 'rgba(0,0,0,0)',
+                        }
+                    ))
+                ]),
+                dbc.CardFooter('Learn more')
+            ], style={'height': '100%'}, color='#273342', inverse=True),
+        ], xs=12, sm=12, md=12, lg=6, xl=6),
+    ], style={'padding': '10px'}),
+    html.Footer('Powered by Protean Labs',
                 style={'backgrounds-color': '#2e343e',
                        'color': 'white',
                        'font-size': '20px',
@@ -541,7 +627,7 @@ app.layout = dbc.Container([
 
 
 def run_query(query):
-    request = requests.post('https://api.thegraph.com/subgraphs/id/QmdXcjjJUpzwRXjQY2XncNoSMgbvtDPTZxaB9k3vRki85L'
+    request = requests.post('https://api.thegraph.com/subgraphs/id/Qmc9qMPBKNLBZmNQHk22msTMUzRAAvMfkB3B8XHVpAqGPo'
                             '',
                             json={'query': query})
     if request.status_code == 200:
@@ -558,7 +644,6 @@ def run_query(query):
     Input(component_id='address', component_property='value')
 ])
 def personal_metrics_main(ohmie_address):
-    print(ohmie_address)
     # Step 1 Create a query using graph API
     query = """
     {
@@ -637,8 +722,6 @@ def personal_metrics_main(ohmie_address):
     ohmieInfo_df['pctmcap'] = ohmieInfo_df.sohmbalance / ohmieInfo_df.ohmcirculatingsupply
     ohmieInfo_df['pctrfv'] = ohmieInfo_df.pctmcap * ohmieInfo_df.treasuryriskfreevalue
     ohmieInfo_df['pctmv'] = ohmieInfo_df.pctmcap * ohmieInfo_df.treasurymarketvalue
-
-    print(ohmieInfo_df)
 
     metrics_chart_main = go.Figure()
     metrics_chart_2 = go.Figure()
