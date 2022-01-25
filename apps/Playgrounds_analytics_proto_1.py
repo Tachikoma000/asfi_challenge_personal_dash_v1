@@ -19,7 +19,7 @@ from millify import millify
 from subgrounds.dash_wrappers import Graph
 from subgrounds.plotly_wrappers import Figure, Scatter, Indicator
 
-from olympus_subgrounds import protocol_metrics_1year, last_metric, sg
+from olympus_subgrounds import protocol_metrics_1year, last_metric, sg, immediate
 
 # This is a single page app
 
@@ -143,11 +143,8 @@ app.layout = dbc.Container([
                     html.Hr(className='my-2'),
                     html.H1('$' +
                             millify(
-                                sg.execute(
-                                    sg.mk_request([
-                                        last_metric.marketCap
-                                    ])
-                                )[0]['protocolMetrics'][0]['marketCap'],
+                                immediate(sg, last_metric.marketCap),
+                                # last_metric.marketCap.extract_data(sg.execute(sg.mk_request([last_metric.marketCap]))),
                                 precision=2),
                             style={'text-align': 'center'}
                             ),
@@ -161,11 +158,12 @@ app.layout = dbc.Container([
                     html.Hr(className='my-2'),
                     html.H1('$' +
                             millify(
-                                sg.execute(
-                                    sg.mk_request([
-                                        last_metric.ohmPrice
-                                    ])
-                                )[0]['protocolMetrics'][0]['ohmPrice'],
+                                immediate(sg, last_metric.ohmPrice),
+                                # sg.execute(
+                                #     sg.mk_request([
+                                #         last_metric.ohmPrice
+                                #     ])
+                                # )[0]['protocolMetrics'][0]['ohmPrice'],
                                 precision=2),
                             style={'text-align': 'center'}
                             ),
@@ -179,11 +177,12 @@ app.layout = dbc.Container([
                     html.Hr(className='my-2'),
                     html.H1(
                         millify(
-                            sg.execute(
-                                sg.mk_request([
-                                    last_metric.currentAPY
-                                ])
-                            )[0]['protocolMetrics'][0]['currentAPY'],
+                            immediate(sg, last_metric.currentAPY),
+                            # sg.execute(
+                            #     sg.mk_request([
+                            #         last_metric.currentAPY
+                            #     ])
+                            # )[0]['protocolMetrics'][0]['currentAPY'],
                             precision=2),
                         style={'text-align': 'center'}
                     ),
@@ -197,11 +196,12 @@ app.layout = dbc.Container([
                     html.Hr(className='my-2'),
                     html.H1(
                         millify(
-                            sg.execute(
-                                sg.mk_request([
-                                    last_metric.totalValueLocked
-                                ])
-                            )[0]['protocolMetrics'][0]['totalValueLocked'],
+                            immediate(sg, last_metric.totalValueLocked),
+                            # sg.execute(
+                            #     sg.mk_request([
+                            #         last_metric.totalValueLocked
+                            #     ])
+                            # )[0]['protocolMetrics'][0]['totalValueLocked'],
                             precision=2),
                         style={'text-align': 'center'}
                     ),
@@ -218,11 +218,12 @@ app.layout = dbc.Container([
                     ]),
                     dbc.Col([
                         millify(
-                            sg.execute(
-                                sg.mk_request([
-                                    last_metric.treasuryRiskFreeValue
-                                ])
-                            )[0]['protocolMetrics'][0]['treasuryRiskFreeValue'],
+                            immediate(sg, last_metric.treasuryRiskFreeValue),
+                            # sg.execute(
+                            #     sg.mk_request([
+                            #         last_metric.treasuryRiskFreeValue
+                            #     ])
+                            # )[0]['protocolMetrics'][0]['treasuryRiskFreeValue'],
                             precision=2)
                     ]),
                 ]),
@@ -281,11 +282,12 @@ app.layout = dbc.Container([
                     ]),
                     dbc.Col([
                         millify(
-                            sg.execute(
-                                sg.mk_request([
-                                    last_metric.treasuryMarketValue
-                                ])
-                            )[0]['protocolMetrics'][0]['treasuryMarketValue'],
+                            immediate(sg, last_metric.treasuryMarketValue),
+                            # sg.execute(
+                            #     sg.mk_request([
+                            #         last_metric.treasuryMarketValue
+                            #     ])
+                            # )[0]['protocolMetrics'][0]['treasuryMarketValue'],
                             precision=2)
                     ]),
                 ]),
@@ -371,11 +373,12 @@ app.layout = dbc.Container([
                         ]),
                         dbc.Col([
                             millify(
-                                sg.execute(
-                                    sg.mk_request([
-                                        protocol_metrics_1year.marketCap
-                                    ])
-                                )[0]['protocolMetrics'][0]['marketCap'],
+                                immediate(sg, last_metric.marketCap),
+                                # sg.execute(
+                                #     sg.mk_request([
+                                #         protocol_metrics_1year.marketCap
+                                #     ])
+                                # )[0]['protocolMetrics'][0]['marketCap'],
                                 precision=2)
                         ]),
                     ]),

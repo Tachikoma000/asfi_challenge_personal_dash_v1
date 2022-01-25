@@ -9,4 +9,4 @@ requests
 retrying
 pycoingecko
 dash-extensions
-subgrounds
+subgrounds==0.0.3

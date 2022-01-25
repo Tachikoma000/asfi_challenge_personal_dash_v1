@@ -6,28 +6,52 @@ from dash import html
 from subgrounds.dash_wrappers import Graph
 from subgrounds.plotly_wrappers import Figure, Scatter, Indicator
 from subgrounds.schema import TypeRef
-from subgrounds.subgraph import SyntheticField
+from subgrounds.subgraph import SyntheticField, FieldPath
 from subgrounds.subgrounds import Subgrounds
 
 
 sg = Subgrounds()
 olympusDAO = sg.load_subgraph('https://api.thegraph.com/subgraphs/name/drondin/olympus-protocol-metrics')
 
+def immediate(sg: Subgrounds, fpath: FieldPath):
+  data = sg.execute(sg.mk_request([fpath]))
+  return fpath.extract_data(data)[0]
+
 # Define useful synthetic fields
 olympusDAO.ProtocolMetric.datetime = SyntheticField(
   lambda timestamp: str(datetime.fromtimestamp(timestamp)),
-  TypeRef.Named('String'),
+  SyntheticField.STRING,
   olympusDAO.ProtocolMetric.timestamp,
 )
 
-olympusDAO.ProtocolMetric.staked_supply_percent = 100 * olympusDAO.ProtocolMetric.sOhmCirculatingSupply / (1 + olympusDAO.ProtocolMetric.totalSupply)
+# olympusDAO.ProtocolMetric.staked_supply_percent = 100 * olympusDAO.ProtocolMetric.sOhmCirculatingSupply / olympusDAO.ProtocolMetric.totalSupply
+olympusDAO.ProtocolMetric.staked_supply_percent = SyntheticField(
+  lambda sohm_supply, total_supply: 100 * sohm_supply / total_supply,
+  SyntheticField.FLOAT,
+  [
+    olympusDAO.ProtocolMetric.sOhmCirculatingSupply,
+    olympusDAO.ProtocolMetric.totalSupply
+  ],
+  default=100.0
+)
+
 olympusDAO.ProtocolMetric.unstaked_supply_percent = 100 - olympusDAO.ProtocolMetric.staked_supply_percent
 
-olympusDAO.ProtocolMetric.rfv_per_ohm = olympusDAO.ProtocolMetric.treasuryRiskFreeValue / (olympusDAO.ProtocolMetric.totalSupply + 1)
-olympusDAO.ProtocolMetric.price_rfv_ratio = 100 * olympusDAO.ProtocolMetric.ohmPrice / (olympusDAO.ProtocolMetric.rfv_per_ohm + 1)
+# Treasury RFV per OHM and ratio
+olympusDAO.ProtocolMetric.rfv_per_ohm = SyntheticField(
+  lambda treasury_rfv, total_supply: treasury_rfv / total_supply if treasury_rfv / total_supply > 1 else 0,
+  SyntheticField.FLOAT,
+  [
+    olympusDAO.ProtocolMetric.treasuryRiskFreeValue,
+    olympusDAO.ProtocolMetric.totalSupply
+  ]
+)
 
-olympusDAO.ProtocolMetric.tmv_per_ohm = olympusDAO.ProtocolMetric.treasuryMarketValue / (olympusDAO.ProtocolMetric.totalSupply + 1)
-olympusDAO.ProtocolMetric.price_tmv_ratio = 100 * olympusDAO.ProtocolMetric.ohmPrice / (olympusDAO.ProtocolMetric.tmv_per_ohm + 1)
+olympusDAO.ProtocolMetric.price_rfv_ratio = 100 * olympusDAO.ProtocolMetric.ohmPrice / olympusDAO.ProtocolMetric.rfv_per_ohm
+
+# Treasury market value per OHM and ratio
+olympusDAO.ProtocolMetric.tmv_per_ohm = olympusDAO.ProtocolMetric.treasuryMarketValue / olympusDAO.ProtocolMetric.totalSupply
+olympusDAO.ProtocolMetric.price_tmv_ratio = 100 * olympusDAO.ProtocolMetric.ohmPrice / olympusDAO.ProtocolMetric.tmv_per_ohm
 
 protocol_metrics_1year = olympusDAO.Query.protocolMetrics(
   orderBy=olympusDAO.ProtocolMetric.timestamp,
