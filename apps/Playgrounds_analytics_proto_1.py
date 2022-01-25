@@ -19,7 +19,7 @@ from millify import millify
 from subgrounds.dash_wrappers import Graph
 from subgrounds.plotly_wrappers import Figure, Scatter, Indicator
 
-from olympus_subgrounds import protocol_metrics_1year, last_metric, sg, immediate
+from olympus_subgrounds import sg, protocol_metrics_1year, last_metric, proposals, immediate
 
 # This is a single page app
 
@@ -620,6 +620,55 @@ app.layout = dbc.Container([
             ], style={'height': '100%'}, color='#273342', inverse=True),
         ], xs=12, sm=12, md=12, lg=6, xl=6),
     ], style={'padding': '10px'}),
+    html.Div([
+        Graph(Figure(
+            subgrounds=sg,
+            traces=[
+            Scatter(
+                x=proposals.datetime,
+                y=proposals.votes,
+                text=proposals.summary,
+                name='proposals',
+                mode='markers',
+            ),
+            Scatter(
+                x=protocol_metrics_1year.datetime,
+                y=protocol_metrics_1year.treasuryMarketValue,
+                name='treasury_market_value',
+                yaxis='y2',
+            )
+            ],
+            layout={
+            'showlegend': True,
+            'hovermode': 'x',
+            'spikedistance': -1,
+            'xaxis': {
+                'showspikes': True,
+                'spikedash': 'solid',
+                'spikemode': 'across+toaxis',
+                'spikesnap': 'cursor',
+                'spikecolor': 'black',
+                'spikethickness': 1,
+                'showline': True,
+                'showgrid': True
+            },
+            'yaxis': {
+                'title': 'Proposals',
+                'titlefont': {'color': '#1f77b4'},
+                'tickfont': {'color': '#ffffff'},
+            },
+            'yaxis2': {
+                'title': 'Treasury Market Value',
+                'titlefont': {'color': '#ff7f0e'},
+                'tickfont': {'color': '#ff7f0e'},
+                'anchor': 'free',
+                'overlaying': 'y',
+                'side': 'left',
+                'position': 0.05,
+            },
+            }
+        ))
+    ]),
     html.Footer('Powered by Protean Labs',
                 style={'backgrounds-color': '#2e343e',
                        'color': 'white',

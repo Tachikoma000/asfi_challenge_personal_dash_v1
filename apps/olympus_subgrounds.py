@@ -64,3 +64,40 @@ last_metric = olympusDAO.Query.protocolMetrics(
   orderDirection='desc',
   first=1
 )
+
+# ================================================================
+# Snapshot data
+# ================================================================
+
+snapshot = sg.load_subgraph('https://hub.snapshot.org/graphql')
+
+snapshot.Proposal.datetime = SyntheticField(
+  lambda timestamp: str(datetime.fromtimestamp(timestamp)),
+  SyntheticField.STRING,
+  snapshot.Proposal.end,
+)
+
+def fmt_summary(title, choices, scores):
+  total_vote = sum(scores)
+  vote_string = '<br>'.join(f'{choice}: {100*score/total_vote:.2f}%' for choice, score in zip(choices, scores))
+  return f'{title}<br>{vote_string}'
+
+snapshot.Proposal.summary = SyntheticField(
+  fmt_summary,
+  SyntheticField.STRING,
+  [
+    snapshot.Proposal.title,
+    snapshot.Proposal.choices,
+    snapshot.Proposal.scores
+  ],
+)
+
+proposals = snapshot.Query.proposals(
+  orderBy='created',
+  orderDirection='desc',
+  first=100,
+  where=[
+    snapshot.Proposal.space == 'olympusdao.eth',
+    snapshot.Proposal.state == 'closed'
+  ]
+)
