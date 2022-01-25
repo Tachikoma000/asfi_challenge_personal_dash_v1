@@ -19,7 +19,7 @@ from millify import millify
 from subgrounds.dash_wrappers import Graph
 from subgrounds.plotly_wrappers import Figure, Scatter, Indicator
 
-from olympus_subgrounds import protocol_metrics_1year, last_metric, sg
+from olympus_subgrounds import sg, protocol_metrics_1year, last_metric, proposals, immediate
 
 # This is a single page app
 
@@ -143,11 +143,8 @@ app.layout = dbc.Container([
                     html.Hr(className='my-2'),
                     html.H1('$' +
                             millify(
-                                sg.execute(
-                                    sg.mk_request([
-                                        last_metric.marketCap
-                                    ])
-                                )[0]['protocolMetrics'][0]['marketCap'],
+                                immediate(sg, last_metric.marketCap),
+                                # last_metric.marketCap.extract_data(sg.execute(sg.mk_request([last_metric.marketCap]))),
                                 precision=2),
                             style={'text-align': 'center'}
                             ),
@@ -161,11 +158,12 @@ app.layout = dbc.Container([
                     html.Hr(className='my-2'),
                     html.H1('$' +
                             millify(
-                                sg.execute(
-                                    sg.mk_request([
-                                        last_metric.ohmPrice
-                                    ])
-                                )[0]['protocolMetrics'][0]['ohmPrice'],
+                                immediate(sg, last_metric.ohmPrice),
+                                # sg.execute(
+                                #     sg.mk_request([
+                                #         last_metric.ohmPrice
+                                #     ])
+                                # )[0]['protocolMetrics'][0]['ohmPrice'],
                                 precision=2),
                             style={'text-align': 'center'}
                             ),
@@ -179,11 +177,12 @@ app.layout = dbc.Container([
                     html.Hr(className='my-2'),
                     html.H1(
                         millify(
-                            sg.execute(
-                                sg.mk_request([
-                                    last_metric.currentAPY
-                                ])
-                            )[0]['protocolMetrics'][0]['currentAPY'],
+                            immediate(sg, last_metric.currentAPY),
+                            # sg.execute(
+                            #     sg.mk_request([
+                            #         last_metric.currentAPY
+                            #     ])
+                            # )[0]['protocolMetrics'][0]['currentAPY'],
                             precision=2),
                         style={'text-align': 'center'}
                     ),
@@ -197,11 +196,12 @@ app.layout = dbc.Container([
                     html.Hr(className='my-2'),
                     html.H1(
                         millify(
-                            sg.execute(
-                                sg.mk_request([
-                                    last_metric.totalValueLocked
-                                ])
-                            )[0]['protocolMetrics'][0]['totalValueLocked'],
+                            immediate(sg, last_metric.totalValueLocked),
+                            # sg.execute(
+                            #     sg.mk_request([
+                            #         last_metric.totalValueLocked
+                            #     ])
+                            # )[0]['protocolMetrics'][0]['totalValueLocked'],
                             precision=2),
                         style={'text-align': 'center'}
                     ),
@@ -218,11 +218,12 @@ app.layout = dbc.Container([
                     ]),
                     dbc.Col([
                         millify(
-                            sg.execute(
-                                sg.mk_request([
-                                    last_metric.treasuryRiskFreeValue
-                                ])
-                            )[0]['protocolMetrics'][0]['treasuryRiskFreeValue'],
+                            immediate(sg, last_metric.treasuryRiskFreeValue),
+                            # sg.execute(
+                            #     sg.mk_request([
+                            #         last_metric.treasuryRiskFreeValue
+                            #     ])
+                            # )[0]['protocolMetrics'][0]['treasuryRiskFreeValue'],
                             precision=2)
                     ]),
                 ]),
@@ -281,11 +282,12 @@ app.layout = dbc.Container([
                     ]),
                     dbc.Col([
                         millify(
-                            sg.execute(
-                                sg.mk_request([
-                                    last_metric.treasuryMarketValue
-                                ])
-                            )[0]['protocolMetrics'][0]['treasuryMarketValue'],
+                            immediate(sg, last_metric.treasuryMarketValue),
+                            # sg.execute(
+                            #     sg.mk_request([
+                            #         last_metric.treasuryMarketValue
+                            #     ])
+                            # )[0]['protocolMetrics'][0]['treasuryMarketValue'],
                             precision=2)
                     ]),
                 ]),
@@ -371,11 +373,12 @@ app.layout = dbc.Container([
                         ]),
                         dbc.Col([
                             millify(
-                                sg.execute(
-                                    sg.mk_request([
-                                        protocol_metrics_1year.marketCap
-                                    ])
-                                )[0]['protocolMetrics'][0]['marketCap'],
+                                immediate(sg, last_metric.marketCap),
+                                # sg.execute(
+                                #     sg.mk_request([
+                                #         protocol_metrics_1year.marketCap
+                                #     ])
+                                # )[0]['protocolMetrics'][0]['marketCap'],
                                 precision=2)
                         ]),
                     ]),
@@ -617,6 +620,55 @@ app.layout = dbc.Container([
             ], style={'height': '100%'}, color='#273342', inverse=True),
         ], xs=12, sm=12, md=12, lg=6, xl=6),
     ], style={'padding': '10px'}),
+    html.Div([
+        Graph(Figure(
+            subgrounds=sg,
+            traces=[
+            Scatter(
+                x=proposals.datetime,
+                y=proposals.votes,
+                text=proposals.summary,
+                name='proposals',
+                mode='markers',
+            ),
+            Scatter(
+                x=protocol_metrics_1year.datetime,
+                y=protocol_metrics_1year.treasuryMarketValue,
+                name='treasury_market_value',
+                yaxis='y2',
+            )
+            ],
+            layout={
+            'showlegend': True,
+            'hovermode': 'x',
+            'spikedistance': -1,
+            'xaxis': {
+                'showspikes': True,
+                'spikedash': 'solid',
+                'spikemode': 'across+toaxis',
+                'spikesnap': 'cursor',
+                'spikecolor': 'black',
+                'spikethickness': 1,
+                'showline': True,
+                'showgrid': True
+            },
+            'yaxis': {
+                'title': 'Proposals',
+                'titlefont': {'color': '#1f77b4'},
+                'tickfont': {'color': '#ffffff'},
+            },
+            'yaxis2': {
+                'title': 'Treasury Market Value',
+                'titlefont': {'color': '#ff7f0e'},
+                'tickfont': {'color': '#ff7f0e'},
+                'anchor': 'free',
+                'overlaying': 'y',
+                'side': 'left',
+                'position': 0.05,
+            },
+            }
+        ))
+    ]),
     html.Footer('Powered by Protean Labs',
                 style={'backgrounds-color': '#2e343e',
                        'color': 'white',
